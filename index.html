@@ -299,7 +299,7 @@
   <a href="#database-persistence-bring-your-own-db" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🗄️ Database Persistence (Bring Your Own DB)
+        Database Persistence (Bring Your Own DB)
       
     </span>
   </a>
@@ -310,7 +310,7 @@
   <a href="#global-state-management" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🧠 Global State Management
+        Global State Management
       
     </span>
   </a>
@@ -321,7 +321,7 @@
   <a href="#agent-studio-ui" class="md-nav__link">
     <span class="md-ellipsis">
       
-        📊 Agent Studio UI
+        Agent Studio UI
       
     </span>
   </a>
@@ -416,7 +416,7 @@
   <a href="#database-persistence-bring-your-own-db" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🗄️ Database Persistence (Bring Your Own DB)
+        Database Persistence (Bring Your Own DB)
       
     </span>
   </a>
@@ -427,7 +427,7 @@
   <a href="#global-state-management" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🧠 Global State Management
+        Global State Management
       
     </span>
   </a>
@@ -438,7 +438,7 @@
   <a href="#agent-studio-ui" class="md-nav__link">
     <span class="md-ellipsis">
       
-        📊 Agent Studio UI
+        Agent Studio UI
       
     </span>
   </a>
@@ -479,45 +479,24 @@
 
 
 <h1 id="welcome-to-swarm-kit">Welcome to Swarm Kit 🐝</h1>
-<blockquote>
-<p>A minimalist, state-aware multi-agent orchestration framework for Python.</p>
-</blockquote>
+<p><strong>A minimalist, state-aware multi-agent orchestration framework for Python.</strong></p>
 <p>Swarm Kit lets you build fault-tolerant AI workflows with native state management, tool execution, and database persistence — without the complexity of heavier frameworks.</p>
 <hr />
 <h2 id="why-swarm-kit">Why Swarm Kit?</h2>
-<p>Most agent frameworks lock you into a single paradigm. Swarm Kit gives you the best of both worlds:</p>
-<table>
-<thead>
-<tr>
-<th>Mode</th>
-<th>How it works</th>
-<th>Best for</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>🔀 <strong>Unsupervised</strong></td>
-<td>Agents dynamically chat, use tools, and hand off control to each other</td>
-<td>Customer support bots, open-ended assistants</td>
-</tr>
-<tr>
-<td>🗂️ <strong>Supervised</strong></td>
-<td>An LLM Supervisor generates a strict JSON execution plan and forces agents to run in sequence</td>
-<td>Data pipelines, structured workflows</td>
-</tr>
-</tbody>
-</table>
+<p>Most agent frameworks lock you into one paradigm. Swarm Kit gives you both:</p>
+<p><strong>Unsupervised Mode</strong> — Agents dynamically chat, use tools, and transfer control to each other. Perfect for customer support bots and open-ended assistants.</p>
+<p><strong>Supervised Mode</strong> — An LLM Supervisor generates a strict JSON execution plan and forces specialized agents to run in sequence. Perfect for data pipelines and structured workflows.</p>
 <hr />
 <h2 id="quick-installation">Quick Installation</h2>
 <pre><code class="language-bash">pip install swarm-agent-kit
 </code></pre>
-<p>Set your API keys in a <code>.env</code> file. Swarm Kit uses <a href="https://github.com/BerriAI/litellm">LiteLLM</a> under the hood, so it supports 100+ providers out of the box:</p>
+<p>Set your API keys in a <code>.env</code> file. Swarm Kit uses LiteLLM under the hood, supporting 100+ providers out of the box:</p>
 <pre><code class="language-env">OPENAI_API_KEY=&quot;sk-...&quot;
 GEMINI_API_KEY=&quot;...&quot;
 </code></pre>
 <hr />
 <h2 id="core-features">Core Features</h2>
-<h3 id="database-persistence-bring-your-own-db">🗄️ Database Persistence (Bring Your Own DB)</h3>
+<h3 id="database-persistence-bring-your-own-db">Database Persistence (Bring Your Own DB)</h3>
 <p>Never lose chat history. Pass your own <code>save</code> and <code>load</code> functions to the Swarm — it handles session resumption automatically.</p>
 <pre><code class="language-python">def save_to_redis(session_id, history, state):
     redis_client.set(session_id, {&quot;history&quot;: history, &quot;state&quot;: state})
@@ -525,31 +504,26 @@ GEMINI_API_KEY=&quot;...&quot;
 swarm = Swarm(agents=[...], save_handler=save_to_redis)
 await swarm.execute_async(..., session_id=&quot;ticket_123&quot;)
 </code></pre>
-<p>Works with <strong>Redis</strong>, <strong>PostgreSQL</strong>, <strong>SQLite</strong>, or any storage backend you prefer.</p>
-<hr />
-<h3 id="global-state-management">🧠 Global State Management</h3>
+<p>Works with Redis, PostgreSQL, SQLite, or any storage backend you prefer.</p>
+<h3 id="global-state-management">Global State Management</h3>
 <p>Instead of bloating the chat history with repeated context, agents share a <code>state</code> dictionary. Each agent is natively equipped with an <code>update_state</code> tool to read and mutate this shared memory — keeping token usage lean across long workflows.</p>
-<pre><code class="language-python"># Agents can read and update shared state
-state = {
+<pre><code class="language-python">state = {
     &quot;user_tier&quot;: &quot;enterprise&quot;,
     &quot;issue_category&quot;: None,
     &quot;resolved&quot;: False
 }
 </code></pre>
-<hr />
-<h3 id="agent-studio-ui">📊 Agent Studio UI</h3>
-<p>Swarm Kit ships with a beautiful local dashboard to visualize agent handovers, tool executions, and state changes in real-time.</p>
+<h3 id="agent-studio-ui">Agent Studio UI</h3>
+<p>Swarm Kit ships with a local dashboard to visualize agent handovers, tool executions, and state changes in real-time.</p>
 <pre><code class="language-bash">swarm-kit studio
 </code></pre>
-<blockquote>
-<p>Runs on <a href="http://localhost:8000">http://localhost:8000</a></p>
-</blockquote>
+<p>Runs at <code>http://localhost:8000</code></p>
 <hr />
 <h2 id="next-steps">Next Steps</h2>
 <ul>
-<li><a href="getting-started.md"><strong>Getting Started Guide →</strong></a></li>
-<li><a href="api/swarm.md"><strong>API Reference →</strong></a></li>
-<li><a href="examples/index.md"><strong>Examples →</strong></a></li>
+<li><a href="getting-started.md">Getting Started</a></li>
+<li><a href="api/swarm.md">API Reference</a></li>
+<li><a href="examples/index.md">Examples</a></li>
 </ul>
 
 
