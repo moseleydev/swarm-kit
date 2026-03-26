@@ -1,5 +1,5 @@
 [project]
-name = "swarm-kit"
+name = "swarm-agent-kit"
 version = "0.1.0"
 description = "A minimalist multi-agent orchestration library."
 license = { text = "MIT" }
