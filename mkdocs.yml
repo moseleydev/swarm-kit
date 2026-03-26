@@ -1,0 +1,6 @@
+site_name: Swarm Kit
+site_description: A minimalist, state-aware multi-agent orchestration framework.
+theme:
+  name: material
+  palette:
+    scheme: slate
