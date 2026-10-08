@@ -808,7 +808,7 @@ chat. Swarm Kit gives agents a shared <strong>state dictionary</strong> instead:
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">state</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;user_tier&quot;</span><span class="p">:</span> <span class="s2">&quot;enterprise&quot;</span><span class="p">,</span> <span class="s2">&quot;issue_category&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;resolved&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">)</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># {&#39;user_tier&#39;: &#39;enterprise&#39;, &#39;issue_category&#39;: &#39;sso&#39;, &#39;resolved&#39;: &#39;false&#39;}</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># {&#39;user_tier&#39;: &#39;enterprise&#39;, &#39;issue_category&#39;: &#39;sso&#39;, &#39;resolved&#39;: False}</span>
 </code></pre></div>
 <h2 id="tips">Tips<a class="headerlink" href="#tips" title="Permanent link">&para;</a></h2>
 <ul>
@@ -816,7 +816,12 @@ chat. Swarm Kit gives agents a shared <strong>state dictionary</strong> instead:
   if it is already in the state with a <code>None</code> value.</li>
 <li><strong>Mention the state in instructions</strong>, for example: <em>"Record the order number in the state
   as <code>order_id</code>."</em></li>
-<li>Values written by agents are <strong>strings</strong>. Parse them in your code when you need other types.</li>
+<li>The <code>update_state</code> tool accepts JSON-encoded strings and decodes them before storing the value.
+  Numbers, booleans, lists, objects and <code>null</code> become their corresponding Python types.
+  Plain text that is not valid JSON is kept unchanged, including <code>NaN</code>, <code>Infinity</code> and <code>-Infinity</code>.
+  To preserve numeric-looking text as a string,
+  send a quoted JSON string: <code>value='"42"'</code> stores <code>"42"</code>, whereas <code>value="42"</code> stores <code>42</code>.
+  Native JSON values returned by a provider are preserved as well.</li>
 <li>The dictionary you pass in is updated in place and also returned as <code>result.state</code>.</li>
 <li>Your own tools can read or write the same dictionary if they have a reference to it.</li>
 </ul>
