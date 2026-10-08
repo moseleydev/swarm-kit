@@ -99,7 +99,7 @@ def test_every_parallel_tool_call_gets_a_response(llm):
         make_response("done"),
     )
     result = make_swarm().execute("Triage", "go")
-    assert result.state == {"a": "1", "b": "2"}
+    assert result.state == {"a": 1, "b": 2}
     assert [m["tool_call_id"] for m in result.history if m["role"] == "tool"] == ["s1", "s2"]
 
 

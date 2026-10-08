@@ -14,7 +14,7 @@ result = swarm.execute(
     state={"user_tier": "enterprise", "issue_category": None, "resolved": False},
 )
 print(result.state)
-# {'user_tier': 'enterprise', 'issue_category': 'sso', 'resolved': 'false'}
+# {'user_tier': 'enterprise', 'issue_category': 'sso', 'resolved': False}
 ```
 
 ## Tips
@@ -23,7 +23,12 @@ print(result.state)
   if it is already in the state with a `None` value.
 - **Mention the state in instructions**, for example: *"Record the order number in the state
   as `order_id`."*
-- Values written by agents are **strings**. Parse them in your code when you need other types.
+- The `update_state` tool accepts JSON-encoded strings and decodes them before storing the value.
+  Numbers, booleans, lists, objects and `null` become their corresponding Python types.
+  Plain text that is not valid JSON is kept unchanged, including `NaN`, `Infinity` and `-Infinity`.
+  To preserve numeric-looking text as a string,
+  send a quoted JSON string: `value='"42"'` stores `"42"`, whereas `value="42"` stores `42`.
+  Native JSON values returned by a provider are preserved as well.
 - The dictionary you pass in is updated in place and also returned as `result.state`.
 - Your own tools can read or write the same dictionary if they have a reference to it.
 

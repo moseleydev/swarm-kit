@@ -104,7 +104,14 @@ class Agent:
                         "type": "object",
                         "properties": {
                             "key": {"type": "string"},
-                            "value": {"type": "string"}
+                            "value": {
+                                "type": "string",
+                                "description": (
+                                    "Value encoded as JSON, e.g. 3, false or [1, 2]. "
+                                    "Plain text is kept as a string. "
+                                    'Use a JSON string such as "123" to preserve numeric-looking text.'
+                                ),
+                            }
                         },
                         "required": ["key", "value"]
                     }
