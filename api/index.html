@@ -1068,9 +1068,24 @@ same name. See <a href="../guide/agents/">Agents</a>.</p>
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">event_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">planner_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="p">)</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="n">run_sync_tools_in_thread</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="p">)</span>
 </code></pre></div>
 <p>Raises <code>ValueError</code> if <code>agents</code> is empty or contains duplicate names.</p>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>run_sync_tools_in_thread</code></td>
+<td>Opt-in (default <code>False</code>). When <code>True</code>, synchronous custom tools run via <code>asyncio.to_thread(...)</code> during <code>execute_async()</code> / <code>execute_plan_async()</code>, so they no longer block the event loop. <code>async def</code> tools are still awaited on the event loop. Cancelling a run does not kill a tool already running in its worker thread.</td>
+</tr>
+</tbody>
+</table>
 <h3 id="unsupervised">Unsupervised<a class="headerlink" href="#unsupervised" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">swarm</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">start_agent_name</span><span class="p">,</span> <span class="n">user_input</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_turns</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">history</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SwarmResult</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">await</span> <span class="n">swarm</span><span class="o">.</span><span class="n">execute_async</span><span class="p">(</span><span class="n">start_agent_name</span><span class="p">,</span> <span class="n">user_input</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_turns</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">history</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SwarmResult</span>

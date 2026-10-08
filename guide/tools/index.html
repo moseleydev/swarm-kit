@@ -488,6 +488,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Async tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#synchronous-tools-on-a-worker-thread-opt-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Synchronous tools on a worker thread (opt-in)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -833,6 +850,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Async tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#synchronous-tools-on-a-worker-thread-opt-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Synchronous tools on a worker thread (opt-in)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -940,9 +974,27 @@ they run through <code>asyncio.run()</code>, which fails when an event loop is a
 case, use <code>execute_async()</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>In <code>execute_async()</code>, <strong>synchronous</strong> tools run directly on the event loop. Avoid long
-blocking calls in them, or make them <code>async</code>.</p>
+<p>In <code>execute_async()</code>, <strong>synchronous</strong> tools run directly on the event loop by default, so a
+long blocking call stalls every other task. Avoid blocking calls in them, make them <code>async</code>,
+or opt in to a worker thread (below).</p>
 </div>
+<h3 id="synchronous-tools-on-a-worker-thread-opt-in">Synchronous tools on a worker thread (opt-in)<a class="headerlink" href="#synchronous-tools-on-a-worker-thread-opt-in" title="Permanent link">&para;</a></h3>
+<p>Set <code>run_sync_tools_in_thread=True</code> to run synchronous custom tools in a worker thread during
+async execution:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">swarm</span> <span class="o">=</span> <span class="n">Swarm</span><span class="p">(</span><span class="n">agents</span><span class="o">=</span><span class="p">[</span><span class="n">researcher</span><span class="p">,</span> <span class="n">billing</span><span class="p">],</span> <span class="n">run_sync_tools_in_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">await</span> <span class="n">swarm</span><span class="o">.</span><span class="n">execute_async</span><span class="p">(</span><span class="s2">&quot;Researcher&quot;</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>Each synchronous tool call is executed with <code>asyncio.to_thread(...)</code>, so the event loop stays
+free and several concurrent runs can have blocking tools in flight at the same time. The option
+defaults to <code>False</code> (opt-in) and applies only to synchronous custom tools during
+<code>execute_async()</code> / <code>execute_plan_async()</code>.</p>
+<ul>
+<li><code>async def</code> tools are unaffected: they are still awaited on the event loop, not sent to a thread.</li>
+<li>Built-in tools (<code>transfer</code>, <code>update_state</code>), save/load handlers, event handlers and the
+  planner are unaffected.</li>
+<li>Cancelling the async task waiting for a synchronous tool does not stop a tool already running
+  in its worker thread; the tool continues until the function returns.</li>
+</ul>
 <h2 id="return-values-and-errors">Return values and errors<a class="headerlink" href="#return-values-and-errors" title="Permanent link">&para;</a></h2>
 <ul>
 <li>A <code>str</code> return value is passed to the model unchanged. Any other value is serialized as JSON.</li>

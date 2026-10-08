@@ -718,6 +718,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Unreleased">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -733,7 +750,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#added" class="md-nav__link">
+  <a href="#added_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Added
@@ -824,6 +841,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Unreleased">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -839,7 +873,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#added" class="md-nav__link">
+  <a href="#added_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Added
@@ -917,8 +951,15 @@
 <a href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and this project adheres to
 <a href="https://semver.org/">Semantic Versioning</a>.</p>
 <h2 id="unreleased"><a href="https://github.com/moseleydev/swarm-kit/compare/v0.2.0...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
-<h2 id="020-2026-10-08"><a href="https://github.com/moseleydev/swarm-kit/compare/v0.1.5...v0.2.0">0.2.0</a> - 2026-10-08<a class="headerlink" href="#020-2026-10-08" title="Permanent link">&para;</a></h2>
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>Swarm(run_sync_tools_in_thread=True)</code>: opt-in support for running synchronous custom tools in
+  a worker thread (<code>asyncio.to_thread</code>) during <code>execute_async()</code>/<code>execute_plan_async()</code>, so
+  blocking tools no longer stall the event loop and concurrent runs can have them in flight at
+  the same time. <code>async def</code> tools are still awaited on the event loop.</li>
+</ul>
+<h2 id="020-2026-10-08"><a href="https://github.com/moseleydev/swarm-kit/compare/v0.1.5...v0.2.0">0.2.0</a> - 2026-10-08<a class="headerlink" href="#020-2026-10-08" title="Permanent link">&para;</a></h2>
+<h3 id="added_1">Added<a class="headerlink" href="#added_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>Swarm.execute*()</code> now return a <code>SwarmResult</code> (history, state, final output, last agent, turns, plan).</li>
 <li>Plain Python functions can be passed as tools; the JSON schema is generated from type hints
