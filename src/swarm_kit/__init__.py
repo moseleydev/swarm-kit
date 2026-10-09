@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from .core.agent import Agent
 from .core.swarm import Swarm
 from .core.tools import function_to_schema
-from .core.types import AgentOutput, SwarmResult, ToolCall
+from .core.types import AgentOutput, ApprovalRequest, SwarmResult, ToolCall
 
 # Load API keys from a local .env file, as documented.
 load_dotenv()
@@ -21,6 +21,7 @@ __all__ = [
     "Agent",
     "Swarm",
     "AgentOutput",
+    "ApprovalRequest",
     "SwarmResult",
     "ToolCall",
     "function_to_schema",

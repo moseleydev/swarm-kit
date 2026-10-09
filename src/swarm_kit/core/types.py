@@ -1,4 +1,5 @@
 import json
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
@@ -46,5 +47,20 @@ class SwarmResult(BaseModel):
     final_output: Optional[str] = None
     turns: int = 0
     plan: Optional[List[Dict[str, Any]]] = None
+    session_id: Optional[str] = None
+
+
+@dataclass
+class ApprovalRequest:
+    """A pending tool call that needs human approval before it runs.
+
+    ``arguments`` is a deep copy of the model's arguments. Mutating it does not
+    change the values passed to the tool if the call is approved.
+    """
+
+    agent_name: str
+    tool_name: str
+    arguments: Dict[str, Any]
+    call_id: str
     session_id: Optional[str] = None
 

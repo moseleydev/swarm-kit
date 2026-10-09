@@ -1,6 +1,6 @@
 import json
 import uuid
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 from litellm import acompletion, completion
 
@@ -29,6 +29,10 @@ class Agent:
             agents deciding whom to transfer to. Defaults to ``instructions``.
         model_kwargs: Extra keyword arguments forwarded to LiteLLM on every call
             (e.g. ``{"temperature": 0.2, "api_base": "..."}``).
+        require_approval: Tool names that must be approved by the swarm's
+            ``approval_handler`` before they run. The swarm raises ``ValueError``
+            at construction if this is non-empty and no handler is set, or if a
+            name is not one of this agent's tools.
     """
 
     def __init__(
@@ -40,6 +44,7 @@ class Agent:
         api_key: Optional[str] = None,
         description: Optional[str] = None,
         model_kwargs: Optional[Dict[str, Any]] = None,
+        require_approval: Optional[Iterable[str]] = None,
     ):
         self.name = name
         self.instructions = instructions
@@ -47,6 +52,7 @@ class Agent:
         self.api_key = api_key
         self.description = description or instructions
         self.model_kwargs = dict(model_kwargs or {})
+        self.require_approval = set(require_approval or [])
 
         normalized = [normalize_tool(t) for t in tools or []]
         self.custom_tool_schemas = [schema for schema, _ in normalized]
