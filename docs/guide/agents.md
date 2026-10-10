@@ -27,6 +27,7 @@ researcher = Agent(
 | `description` | `instructions` | A short summary that other agents and the planner see. Set this whenever your instructions are long. |
 | `model_kwargs` | `{}` | Extra LiteLLM parameters, such as `temperature`, `max_tokens`, `api_base` or `timeout`. |
 | `api_key` | `None` | Overrides the API key from the environment for this agent. |
+| `require_approval` | `set()` | Tool names that must be approved by the swarm's `approval_handler` before they run. See [Tools](tools.md#human-in-the-loop-approval). |
 
 ## What the agent sees
 

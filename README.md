@@ -45,6 +45,8 @@ print(result.final_output)  # e.g. "Your order ORD-123 has shipped."
   use a different one.
 - **Plain-function tools.** Pass a typed Python function and the JSON schema is generated
   from its signature and docstring. Sync and `async` functions both work.
+- **Human-in-the-loop.** Mark sensitive tools with `require_approval` and decide each call
+  with an `approval_handler` (sync or async).
 - **Global state.** Agents read and update a shared dictionary, which keeps prompts short.
 - **Bring your own database.** Save/load hooks work with Redis, Postgres, SQLite and others.
   Concurrent sessions stay isolated.

@@ -1,4 +1,5 @@
 import asyncio
+import copy
 import inspect
 import json
 import os
@@ -12,7 +13,7 @@ from rich.console import Console
 from rich.markup import escape
 
 from .agent import TRANSFER_TOOL, UPDATE_STATE_TOOL, Agent
-from .types import AgentOutput, SwarmResult, ToolCall
+from .types import AgentOutput, ApprovalRequest, SwarmResult, ToolCall
 
 console = Console()
 
@@ -20,6 +21,7 @@ History = List[Dict[str, Any]]
 SaveHandler = Callable[[str, History, Dict[str, Any]], Any]
 LoadHandler = Callable[[str], Any]
 EventHandler = Callable[[Dict[str, Any]], Any]
+ApprovalHandler = Callable[[ApprovalRequest], Any]
 
 
 def _reject_constant(name: str) -> None:
@@ -88,6 +90,12 @@ class Swarm:
         planner_kwargs: Extra LiteLLM kwargs for the planner call (e.g. ``api_key``).
         run_sync_tools_in_thread: Opt in to running synchronous custom tools in a worker
             thread during async execution. ``async def`` tools are unaffected.
+        approval_handler: ``(ApprovalRequest) -> True | False | str`` hook called
+            before a tool listed in an agent's ``require_approval``. Return
+            ``True`` to run the tool, ``False`` to reject, or a string reason.
+            May be sync or async. Required when any agent sets ``require_approval``.
+            Creating the swarm also raises if a name in ``require_approval`` is
+            not one of that agent's tools.
     """
 
     def __init__(
@@ -101,6 +109,7 @@ class Swarm:
         event_handler: Optional[EventHandler] = None,
         planner_kwargs: Optional[Dict[str, Any]] = None,
         run_sync_tools_in_thread: bool = False,
+        approval_handler: Optional[ApprovalHandler] = None,
     ):
         if not agents:
             raise ValueError("A Swarm needs at least one agent.")
@@ -122,6 +131,20 @@ class Swarm:
         # Database Hooks
         self.save_handler = save_handler
         self.load_handler = load_handler
+        self.approval_handler = approval_handler
+
+        for name, agent in self.agent_registry.items():
+            unknown = sorted(agent.require_approval - set(agent.functions))
+            if unknown:
+                raise ValueError(
+                    f"require_approval on agent '{name}' names unknown tool(s): {', '.join(unknown)}."
+                )
+        gated = [name for name, agent in self.agent_registry.items() if agent.require_approval]
+        if gated and approval_handler is None:
+            raise ValueError(
+                "approval_handler is required when an agent sets require_approval "
+                f"({', '.join(gated)})."
+            )
 
     # ==========================================
     # PUBLIC API
@@ -324,6 +347,18 @@ class Swarm:
         """Answer every tool call in ``output`` (required by OpenAI-style tool calling)."""
         for call in output.tool_calls or []:
             result = self._handle_builtin(ctx, agent, call, allow_transfer)
+            if result is None and call.name in agent.require_approval:
+                req = ApprovalRequest(
+                    agent_name=agent.name,
+                    tool_name=call.name,
+                    arguments=copy.deepcopy(call.arguments),
+                    call_id=call.id,
+                    session_id=ctx.session_id,
+                )
+                decision = yield _HookRequest(self.approval_handler, (req,))
+                if decision is not True:
+                    reason = decision if isinstance(decision, str) else "approval denied"
+                    result = f"Error: rejected by user: {reason}"
             if result is None:
                 self._save_log(agent.name, "Tool", f"{call.name}({call.arguments})", tool=call.name)
                 try:

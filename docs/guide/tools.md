@@ -94,8 +94,8 @@ defaults to `False` (opt-in) and applies only to synchronous custom tools during
 `execute_async()` / `execute_plan_async()`.
 
 - `async def` tools are unaffected: they are still awaited on the event loop, not sent to a thread.
-- Built-in tools (`transfer`, `update_state`), save/load handlers, event handlers and the
-  planner are unaffected.
+- Built-in tools (`transfer`, `update_state`), save/load handlers, approval handlers, event
+  handlers and the planner are unaffected.
 - Cancelling the async task waiting for a synchronous tool does not stop a tool already running
   in its worker thread; the tool continues until the function returns.
 
@@ -108,8 +108,63 @@ defaults to `False` (opt-in) and applies only to synchronous custom tools during
   error message back.
 
 !!! warning "Treat arguments as untrusted input"
-    The LLM chooses the arguments. Validate them inside every tool, and add a confirmation
-    step before destructive actions.
+    The LLM chooses the arguments. Validate them inside every tool. For destructive
+    actions, use [human-in-the-loop approval](#human-in-the-loop-approval) rather than
+    trusting the model to confirm with the user.
+
+## Human-in-the-loop approval
+
+Destructive tools such as refunds or deletes can require a human decision before they run.
+List their names on the agent and pass an `approval_handler` to the swarm:
+
+```python
+from swarm_kit import Agent, ApprovalRequest, Swarm
+
+def process_refund(order_number: str) -> str:
+    """Process a refund. Call ONLY after you have the order number."""
+    return f"Refund issued for {order_number}."
+
+billing = Agent(
+    name="Billing",
+    instructions="Issue refunds, then confirm to the user.",
+    tools=[process_refund],
+    require_approval={"process_refund"},
+)
+
+def approve(req: ApprovalRequest):
+    print(f"{req.agent_name} wants {req.tool_name}({req.arguments})")
+    return input("Approve? [y/N] ").lower() == "y"
+
+swarm = Swarm(agents=[billing], approval_handler=approve)
+```
+
+The handler may be a regular function or `async def`, like `save_handler` / `load_handler`.
+It receives an [`ApprovalRequest`](../api.md#approvalrequest) and must return:
+
+| Return | Effect | Tool result sent to the model |
+| --- | --- | --- |
+| `True` | Run the tool | The tool's return value |
+| `False` | Reject | `Error: rejected by user: approval denied` |
+| a string | Reject with that reason | `Error: rejected by user: <reason>` |
+
+Each call is decided on its own. Two `process_refund` calls in one model turn produce two
+prompts; there is no "approve all calls of this tool" shortcut. Tools not listed in
+`require_approval` run as usual.
+
+`Swarm(...)` raises `ValueError` immediately if:
+
+- any agent has a non-empty `require_approval` and no `approval_handler` is set, or
+- a name in `require_approval` is not one of that agent's tools (so a typo like
+  `{"process_refnd"}` cannot silently leave the real tool ungated).
+
+`arguments` on the request is a **deep copy**. Mutating it does not change what the tool
+runs with after a `True`.
+
+!!! warning "Idempotency keys"
+    Approval does not protect against a **retried run**. If a whole run is retried after a
+    timeout, an already-approved refund can go out twice. Side-effect tools (for example
+    refunds) should pass the payment provider an idempotency key derived from business data
+    such as the order ID, **not** `call_id` — that identifier changes on a retried run.
 
 ## Parallel tool calls
 

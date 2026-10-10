@@ -51,6 +51,7 @@ And the things you need in production:
 | --- | --- |
 | [**Any model**](guide/providers.md) | Powered by LiteLLM: OpenAI, Anthropic, Gemini, Ollama, Azure, Bedrock and 100+ more, mixed freely per agent. |
 | [**Plain-function tools**](guide/tools.md) | Pass a typed Python function and the JSON schema is generated for you. Sync or `async`. |
+| [**Human-in-the-loop**](guide/tools.md#human-in-the-loop-approval) | Gate sensitive tools behind `require_approval` and an `approval_handler`. |
 | [**Global state**](guide/state.md) | Agents share and update a state dictionary instead of re-reading long transcripts. |
 | [**Bring your own database**](guide/persistence.md) | Save/load hooks for Redis, Postgres, SQLite and others. Sessions stay isolated. |
 | **Async-first** | `execute_async()` is safe to call from FastAPI and other async servers. |

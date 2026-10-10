@@ -65,7 +65,7 @@ src/swarm_kit/
 │   ├── agent.py   # Agent: prompt + model + tools, one LLM call per run()
 │   ├── swarm.py   # Swarm: the orchestration engine (both modes, sync + async)
 │   ├── tools.py   # function_to_schema(): Python function -> JSON tool schema
-│   └── types.py   # AgentOutput, ToolCall, SwarmResult
+│   └── types.py   # AgentOutput, ToolCall, SwarmResult, ApprovalRequest
 ├── cli/main.py    # `swarm-kit` CLI (init, studio, version)
 └── ui/server.py   # Agent Studio dashboard (FastAPI + a single HTML page)
 ```
