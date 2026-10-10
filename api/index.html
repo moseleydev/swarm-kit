@@ -752,6 +752,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#approvalrequest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ApprovalRequest
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#function_to_schemafunc-dict" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -956,6 +967,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#approvalrequest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ApprovalRequest
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#function_to_schemafunc-dict" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1004,7 +1026,7 @@
 
 <h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
 <p>Everything public is importable from the top-level package:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">swarm_kit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">Swarm</span><span class="p">,</span> <span class="n">SwarmResult</span><span class="p">,</span> <span class="n">AgentOutput</span><span class="p">,</span> <span class="n">ToolCall</span><span class="p">,</span> <span class="n">function_to_schema</span><span class="p">,</span> <span class="n">__version__</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">swarm_kit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">Swarm</span><span class="p">,</span> <span class="n">SwarmResult</span><span class="p">,</span> <span class="n">AgentOutput</span><span class="p">,</span> <span class="n">ApprovalRequest</span><span class="p">,</span> <span class="n">ToolCall</span><span class="p">,</span> <span class="n">function_to_schema</span><span class="p">,</span> <span class="n">__version__</span>
 </code></pre></div>
 <h2 id="agent"><code>Agent</code><a class="headerlink" href="#agent" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">Agent</span><span class="p">(</span>
@@ -1015,7 +1037,8 @@
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">)</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">require_approval</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="p">)</span>
 </code></pre></div>
 <table>
 <thead>
@@ -1054,10 +1077,15 @@
 <td><code>custom_tool_schemas</code></td>
 <td>The JSON schemas sent to the model.</td>
 </tr>
+<tr>
+<td><code>require_approval</code></td>
+<td><code>set[str]</code> of tool names that must be approved before they run.</td>
+</tr>
 </tbody>
 </table>
 <p>Raises <code>ValueError</code> if a tool is named <code>transfer</code> or <code>update_state</code>, or if two tools have the
-same name. See <a href="../guide/agents/">Agents</a>.</p>
+same name. See <a href="../guide/agents/">Agents</a>. A non-empty <code>require_approval</code> is validated when
+the <a href="#swarm"><code>Swarm</code></a> is created.</p>
 <h2 id="swarm"><code>Swarm</code><a class="headerlink" href="#swarm" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">Swarm</span><span class="p">(</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">agents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Agent</span><span class="p">],</span>
@@ -1069,9 +1097,12 @@ same name. See <a href="../guide/agents/">Agents</a>.</p>
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">event_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">planner_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="n">run_sync_tools_in_thread</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="p">)</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    <span class="n">approval_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">ApprovalRequest</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="p">)</span>
 </code></pre></div>
-<p>Raises <code>ValueError</code> if <code>agents</code> is empty or contains duplicate names.</p>
+<p>Raises <code>ValueError</code> if <code>agents</code> is empty or contains duplicate names, if any agent has a
+non-empty <code>require_approval</code> and <code>approval_handler</code> is missing, or if <code>require_approval</code>
+names a tool that agent does not have.</p>
 <table>
 <thead>
 <tr>
@@ -1083,6 +1114,10 @@ same name. See <a href="../guide/agents/">Agents</a>.</p>
 <tr>
 <td><code>run_sync_tools_in_thread</code></td>
 <td>Opt-in (default <code>False</code>). When <code>True</code>, synchronous custom tools run via <code>asyncio.to_thread(...)</code> during <code>execute_async()</code> / <code>execute_plan_async()</code>, so they no longer block the event loop. <code>async def</code> tools are still awaited on the event loop. Cancelling a run does not kill a tool already running in its worker thread.</td>
+</tr>
+<tr>
+<td><code>approval_handler</code></td>
+<td>Called with an <a href="#approvalrequest"><code>ApprovalRequest</code></a> before a gated tool runs. Return <code>True</code> to run it, <code>False</code> to reject, or a string reason. May be sync or async. See <a href="../guide/tools/#human-in-the-loop-approval">Tools</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -1265,6 +1300,45 @@ same name. See <a href="../guide/agents/">Agents</a>.</p>
 <td><code>parse_error</code></td>
 <td><code>str \| None</code></td>
 <td>Set when the model sent invalid JSON.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="approvalrequest"><code>ApprovalRequest</code><a class="headerlink" href="#approvalrequest" title="Permanent link">&para;</a></h2>
+<p>A dataclass passed to <code>approval_handler</code> for each gated tool call. <code>arguments</code> is a deep
+copy of the model's arguments; mutating it does not change what the tool runs with.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>agent_name</code></td>
+<td><code>str</code></td>
+<td>Agent that requested the call.</td>
+</tr>
+<tr>
+<td><code>tool_name</code></td>
+<td><code>str</code></td>
+<td>Tool name.</td>
+</tr>
+<tr>
+<td><code>arguments</code></td>
+<td><code>dict</code></td>
+<td>Deep copy of the parsed arguments.</td>
+</tr>
+<tr>
+<td><code>call_id</code></td>
+<td><code>str</code></td>
+<td>Provider tool-call ID. Changes if a run is retried; do not use it as an idempotency key.</td>
+</tr>
+<tr>
+<td><code>session_id</code></td>
+<td><code>str \| None</code></td>
+<td>The run's session ID, if one was given.</td>
 </tr>
 </tbody>
 </table>

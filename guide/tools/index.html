@@ -519,6 +519,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#human-in-the-loop-approval" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Human-in-the-loop approval
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#parallel-tool-calls" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -881,6 +892,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#human-in-the-loop-approval" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Human-in-the-loop approval
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#parallel-tool-calls" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -990,8 +1012,8 @@ defaults to <code>False</code> (opt-in) and applies only to synchronous custom t
 <code>execute_async()</code> / <code>execute_plan_async()</code>.</p>
 <ul>
 <li><code>async def</code> tools are unaffected: they are still awaited on the event loop, not sent to a thread.</li>
-<li>Built-in tools (<code>transfer</code>, <code>update_state</code>), save/load handlers, event handlers and the
-  planner are unaffected.</li>
+<li>Built-in tools (<code>transfer</code>, <code>update_state</code>), save/load handlers, approval handlers, event
+  handlers and the planner are unaffected.</li>
 <li>Cancelling the async task waiting for a synchronous tool does not stop a tool already running
   in its worker thread; the tool continues until the function returns.</li>
 </ul>
@@ -1005,8 +1027,77 @@ defaults to <code>False</code> (opt-in) and applies only to synchronous custom t
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Treat arguments as untrusted input</p>
-<p>The LLM chooses the arguments. Validate them inside every tool, and add a confirmation
-step before destructive actions.</p>
+<p>The LLM chooses the arguments. Validate them inside every tool. For destructive
+actions, use <a href="#human-in-the-loop-approval">human-in-the-loop approval</a> rather than
+trusting the model to confirm with the user.</p>
+</div>
+<h2 id="human-in-the-loop-approval">Human-in-the-loop approval<a class="headerlink" href="#human-in-the-loop-approval" title="Permanent link">&para;</a></h2>
+<p>Destructive tools such as refunds or deletes can require a human decision before they run.
+List their names on the agent and pass an <code>approval_handler</code> to the swarm:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">swarm_kit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">ApprovalRequest</span><span class="p">,</span> <span class="n">Swarm</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">process_refund</span><span class="p">(</span><span class="n">order_number</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Process a refund. Call ONLY after you have the order number.&quot;&quot;&quot;</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Refund issued for </span><span class="si">{</span><span class="n">order_number</span><span class="si">}</span><span class="s2">.&quot;</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">billing</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Billing&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="n">instructions</span><span class="o">=</span><span class="s2">&quot;Issue refunds, then confirm to the user.&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">process_refund</span><span class="p">],</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="n">require_approval</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;process_refund&quot;</span><span class="p">},</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="p">)</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="k">def</span><span class="w"> </span><span class="nf">approve</span><span class="p">(</span><span class="n">req</span><span class="p">:</span> <span class="n">ApprovalRequest</span><span class="p">):</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">req</span><span class="o">.</span><span class="n">agent_name</span><span class="si">}</span><span class="s2"> wants </span><span class="si">{</span><span class="n">req</span><span class="o">.</span><span class="n">tool_name</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">req</span><span class="o">.</span><span class="n">arguments</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>    <span class="k">return</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Approve? [y/N] &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="n">swarm</span> <span class="o">=</span> <span class="n">Swarm</span><span class="p">(</span><span class="n">agents</span><span class="o">=</span><span class="p">[</span><span class="n">billing</span><span class="p">],</span> <span class="n">approval_handler</span><span class="o">=</span><span class="n">approve</span><span class="p">)</span>
+</code></pre></div>
+<p>The handler may be a regular function or <code>async def</code>, like <code>save_handler</code> / <code>load_handler</code>.
+It receives an <a href="../../api/#approvalrequest"><code>ApprovalRequest</code></a> and must return:</p>
+<table>
+<thead>
+<tr>
+<th>Return</th>
+<th>Effect</th>
+<th>Tool result sent to the model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>True</code></td>
+<td>Run the tool</td>
+<td>The tool's return value</td>
+</tr>
+<tr>
+<td><code>False</code></td>
+<td>Reject</td>
+<td><code>Error: rejected by user: approval denied</code></td>
+</tr>
+<tr>
+<td>a string</td>
+<td>Reject with that reason</td>
+<td><code>Error: rejected by user: &lt;reason&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<p>Each call is decided on its own. Two <code>process_refund</code> calls in one model turn produce two
+prompts; there is no "approve all calls of this tool" shortcut. Tools not listed in
+<code>require_approval</code> run as usual.</p>
+<p><code>Swarm(...)</code> raises <code>ValueError</code> immediately if:</p>
+<ul>
+<li>any agent has a non-empty <code>require_approval</code> and no <code>approval_handler</code> is set, or</li>
+<li>a name in <code>require_approval</code> is not one of that agent's tools (so a typo like
+  <code>{"process_refnd"}</code> cannot silently leave the real tool ungated).</li>
+</ul>
+<p><code>arguments</code> on the request is a <strong>deep copy</strong>. Mutating it does not change what the tool
+runs with after a <code>True</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Idempotency keys</p>
+<p>Approval does not protect against a <strong>retried run</strong>. If a whole run is retried after a
+timeout, an already-approved refund can go out twice. Side-effect tools (for example
+refunds) should pass the payment provider an idempotency key derived from business data
+such as the order ID, <strong>not</strong> <code>call_id</code> — that identifier changes on a retried run.</p>
 </div>
 <h2 id="parallel-tool-calls">Parallel tool calls<a class="headerlink" href="#parallel-tool-calls" title="Permanent link">&para;</a></h2>
 <p>When a model requests several tools in one response, all of them run in order. Each result
