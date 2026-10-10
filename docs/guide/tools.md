@@ -115,7 +115,8 @@ defaults to `False` (opt-in) and applies only to synchronous custom tools during
 ## Human-in-the-loop approval
 
 Destructive tools such as refunds or deletes can require a human decision before they run.
-List their names on the agent and pass an `approval_handler` to the swarm:
+List their names on the agent — a set, list or tuple of names, or a single string — and
+pass an `approval_handler` to the swarm:
 
 ```python
 from swarm_kit import Agent, ApprovalRequest, Swarm
