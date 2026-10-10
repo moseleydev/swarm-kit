@@ -1037,7 +1037,7 @@
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">require_approval</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">require_approval</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="p">)</span>
 </code></pre></div>
 <table>
@@ -1079,13 +1079,14 @@
 </tr>
 <tr>
 <td><code>require_approval</code></td>
-<td><code>set[str]</code> of tool names that must be approved before they run.</td>
+<td><code>set[str]</code> of tool names that must be approved before they run. A plain <code>str</code> is treated as one name; a list, set or tuple of names is also accepted. Other non-collection types raise <code>TypeError</code>.</td>
 </tr>
 </tbody>
 </table>
 <p>Raises <code>ValueError</code> if a tool is named <code>transfer</code> or <code>update_state</code>, or if two tools have the
-same name. See <a href="../guide/agents/">Agents</a>. A non-empty <code>require_approval</code> is validated when
-the <a href="#swarm"><code>Swarm</code></a> is created.</p>
+same name. Raises <code>TypeError</code> if <code>require_approval</code> is not a string or a collection of names.
+See <a href="../guide/agents/">Agents</a>. A non-empty <code>require_approval</code> is validated when the
+<a href="#swarm"><code>Swarm</code></a> is created.</p>
 <h2 id="swarm"><code>Swarm</code><a class="headerlink" href="#swarm" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">Swarm</span><span class="p">(</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">agents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Agent</span><span class="p">],</span>

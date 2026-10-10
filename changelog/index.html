@@ -988,6 +988,9 @@
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
+<li><code>Agent(require_approval=...)</code> accepts a single tool name as a string (so
+  <code>require_approval="process_refund"</code> gates that one tool). Other non-collection types
+  raise <code>TypeError</code> naming the bad type.</li>
 <li><code>update_state</code> decodes JSON-encoded string values, supporting numbers, booleans,
   lists, objects and null. Non-JSON text, including <code>NaN</code>, <code>Infinity</code> and
   <code>-Infinity</code>, remains unchanged.</li>

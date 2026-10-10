@@ -1033,7 +1033,8 @@ trusting the model to confirm with the user.</p>
 </div>
 <h2 id="human-in-the-loop-approval">Human-in-the-loop approval<a class="headerlink" href="#human-in-the-loop-approval" title="Permanent link">&para;</a></h2>
 <p>Destructive tools such as refunds or deletes can require a human decision before they run.
-List their names on the agent and pass an <code>approval_handler</code> to the swarm:</p>
+List their names on the agent — a set, list or tuple of names, or a single string — and
+pass an <code>approval_handler</code> to the swarm:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">swarm_kit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">ApprovalRequest</span><span class="p">,</span> <span class="n">Swarm</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">process_refund</span><span class="p">(</span><span class="n">order_number</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
