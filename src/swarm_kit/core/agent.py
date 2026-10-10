@@ -14,6 +14,20 @@ UPDATE_STATE_TOOL = "update_state"
 RESERVED_TOOL_NAMES = {TRANSFER_TOOL, UPDATE_STATE_TOOL}
 
 
+def _normalize_require_approval(value: Any) -> set:
+    """Accept a single tool name, or a collection of names. ``None`` means none."""
+    if value is None:
+        return set()
+    if isinstance(value, str):
+        return {value}
+    if isinstance(value, Iterable) and not isinstance(value, (bytes, bytearray)):
+        return set(value)
+    raise TypeError(
+        "require_approval must be a tool name (str) or a collection of tool names "
+        f"(list, set, or tuple), not {type(value).__name__}."
+    )
+
+
 class Agent:
     """A single LLM-backed worker with its own instructions, model and tools.
 
@@ -29,10 +43,11 @@ class Agent:
             agents deciding whom to transfer to. Defaults to ``instructions``.
         model_kwargs: Extra keyword arguments forwarded to LiteLLM on every call
             (e.g. ``{"temperature": 0.2, "api_base": "..."}``).
-        require_approval: Tool names that must be approved by the swarm's
-            ``approval_handler`` before they run. The swarm raises ``ValueError``
-            at construction if this is non-empty and no handler is set, or if a
-            name is not one of this agent's tools.
+        require_approval: A tool name, or a collection of names, that must be
+            approved by the swarm's ``approval_handler`` before they run. A plain
+            string is one name. The swarm raises ``ValueError`` at construction if
+            this is non-empty and no handler is set, or if a name is not one of
+            this agent's tools. Other non-collection types raise ``TypeError``.
     """
 
     def __init__(
@@ -44,7 +59,7 @@ class Agent:
         api_key: Optional[str] = None,
         description: Optional[str] = None,
         model_kwargs: Optional[Dict[str, Any]] = None,
-        require_approval: Optional[Iterable[str]] = None,
+        require_approval: Optional[Union[str, Iterable[str]]] = None,
     ):
         self.name = name
         self.instructions = instructions
@@ -52,7 +67,7 @@ class Agent:
         self.api_key = api_key
         self.description = description or instructions
         self.model_kwargs = dict(model_kwargs or {})
-        self.require_approval = set(require_approval or [])
+        self.require_approval = _normalize_require_approval(require_approval)
 
         normalized = [normalize_tool(t) for t in tools or []]
         self.custom_tool_schemas = [schema for schema, _ in normalized]

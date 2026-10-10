@@ -17,7 +17,7 @@ Agent(
     api_key: str | None = None,
     description: str | None = None,
     model_kwargs: dict | None = None,
-    require_approval: Iterable[str] | None = None,
+    require_approval: str | Iterable[str] | None = None,
 )
 ```
 
@@ -30,11 +30,12 @@ Agent(
 | --- | --- |
 | `functions` | `dict[str, Callable]` of the agent's tools, keyed by name. |
 | `custom_tool_schemas` | The JSON schemas sent to the model. |
-| `require_approval` | `set[str]` of tool names that must be approved before they run. |
+| `require_approval` | `set[str]` of tool names that must be approved before they run. A plain `str` is treated as one name; a list, set or tuple of names is also accepted. Other non-collection types raise `TypeError`. |
 
 Raises `ValueError` if a tool is named `transfer` or `update_state`, or if two tools have the
-same name. See [Agents](guide/agents.md). A non-empty `require_approval` is validated when
-the [`Swarm`](#swarm) is created.
+same name. Raises `TypeError` if `require_approval` is not a string or a collection of names.
+See [Agents](guide/agents.md). A non-empty `require_approval` is validated when the
+[`Swarm`](#swarm) is created.
 
 ## `Swarm`
 

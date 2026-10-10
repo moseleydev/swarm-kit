@@ -185,3 +185,37 @@ def test_unknown_require_approval_tool_raises():
         Swarm(agents=[agent], verbose=False, approval_handler=lambda req: True)
     assert "delet" in str(exc.value)
     assert "Billing" in str(exc.value)
+
+
+def test_require_approval_string_is_one_tool_name_and_gates(llm):
+    seen = []
+
+    def handler(req):
+        seen.append(req.tool_name)
+        return True
+
+    agent = Agent(name="Billing", instructions="x", tools=[refund], require_approval="refund")
+    assert agent.require_approval == {"refund"}
+    llm.queue(make_response(None, [tool_call("refund", {"order_number": "INV-9"}, "r1")]), make_response("ok"))
+    result = _swarm(agent, handler).execute("Billing", "go")
+
+    assert seen == ["refund"]
+    assert [m["content"] for m in result.history if m["role"] == "tool"] == ["Refunded INV-9"]
+
+
+def test_require_approval_unknown_string_raises_value_error():
+    agent = Agent(name="Billing", instructions="x", tools=[refund], require_approval="process_refnd")
+    with pytest.raises(ValueError, match="process_refnd") as exc:
+        Swarm(agents=[agent], verbose=False, approval_handler=lambda req: True)
+    message = str(exc.value)
+    assert "unknown tool" in message
+    assert "d, e, f" not in message
+
+
+@pytest.mark.parametrize("bad", [1, True, object(), b"refund"])
+def test_require_approval_non_collection_types_raise_type_error(bad):
+    with pytest.raises(TypeError, match=type(bad).__name__) as exc:
+        Agent(name="Billing", instructions="x", tools=[refund], require_approval=bad)
+    message = str(exc.value)
+    assert "str" in message
+    assert "list, set, or tuple" in message

@@ -19,6 +19,9 @@ All notable changes to this project are documented here. The format is based on
   the same time. `async def` tools are still awaited on the event loop.
 
 ### Changed
+- `Agent(require_approval=...)` accepts a single tool name as a string (so
+  `require_approval="process_refund"` gates that one tool). Other non-collection types
+  raise `TypeError` naming the bad type.
 - `update_state` decodes JSON-encoded string values, supporting numbers, booleans,
   lists, objects and null. Non-JSON text, including `NaN`, `Infinity` and
   `-Infinity`, remains unchanged.
