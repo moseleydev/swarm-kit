@@ -975,6 +975,7 @@
 <h2 id="unreleased"><a href="https://github.com/moseleydev/swarm-kit/compare/v0.2.0...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
 <ul>
+<li><code>SwarmResult</code> now reports total token <code>usage</code> and <code>cost</code> (#8).</li>
 <li>Human-in-the-loop tool approval: <code>Agent(require_approval={"process_refund"})</code> and
   <code>Swarm(approval_handler=...)</code>. The handler receives an <code>ApprovalRequest</code> (a copy of the
   arguments, plus <code>agent_name</code>, <code>tool_name</code>, <code>call_id</code>, <code>session_id</code>) and returns <code>True</code> to
