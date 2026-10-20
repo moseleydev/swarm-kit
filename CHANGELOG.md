@@ -18,11 +18,13 @@ All notable changes to this project are documented here. The format is based on
   a worker thread (`asyncio.to_thread`) during `execute_async()`/`execute_plan_async()`, so
   blocking tools no longer stall the event loop and concurrent runs can have them in flight at
   the same time. `async def` tools are still awaited on the event loop.
+- `Agent` accepts `num_retries` and `timeout` as first-class parameters; the planner defaults to
+  `num_retries=3, timeout=60`
 
 ### Changed
 - `Agent(require_approval=...)` accepts a single tool name as a string (so
   `require_approval="process_refund"` gates that one tool). Other non-collection types
-  raise `TypeError` naming the bad type.
+   raise `TypeError` naming the bad type.
 - `update_state` decodes JSON-encoded string values, supporting numbers, booleans,
   lists, objects and null. Non-JSON text, including `NaN`, `Infinity` and
   `-Infinity`, remains unchanged.

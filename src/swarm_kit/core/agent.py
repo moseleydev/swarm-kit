@@ -48,6 +48,13 @@ class Agent:
             string is one name. The swarm raises ``ValueError`` at construction if
             this is non-empty and no handler is set, or if a name is not one of
             this agent's tools. Other non-collection types raise ``TypeError``.
+        num_retries: num_retries is the number of times the system should retry an unsuccessful LLM call
+            upon transient errors consisting of 429 or 5xx errors. If num_retries is specified as ``None``, the
+            default number of retries from LiteLLM applies. Otherwise, is overridden by the ``num_retries`` key in
+           ``model_kwargs``
+        timeout: timeout is the timeout amount in seconds for each request received by the system. If timeout is
+            specified as ``None``, the default period of timeout from LiteLLM applies. Otherwise, is overridden by the
+           ``timeout`` key in ``model_kwargs``
     """
 
     def __init__(
@@ -60,6 +67,8 @@ class Agent:
         description: Optional[str] = None,
         model_kwargs: Optional[Dict[str, Any]] = None,
         require_approval: Optional[Union[str, Iterable[str]]] = None,
+        num_retries: Optional[int] = None,
+        timeout: Optional[float] = None,
     ):
         self.name = name
         self.instructions = instructions
@@ -68,6 +77,8 @@ class Agent:
         self.description = description or instructions
         self.model_kwargs = dict(model_kwargs or {})
         self.require_approval = _normalize_require_approval(require_approval)
+        self.num_retries = num_retries
+        self.timeout = timeout
 
         normalized = [normalize_tool(t) for t in tools or []]
         self.custom_tool_schemas = [schema for schema, _ in normalized]
@@ -139,8 +150,13 @@ class Agent:
                 }
             })
 
+        merged = dict(self.model_kwargs)
+        if self.num_retries is not None and "num_retries" not in merged:
+            merged["num_retries"] = self.num_retries
+        if self.timeout is not None and "timeout" not in merged:
+            merged["timeout"] = self.timeout
         kwargs: Dict[str, Any] = {
-            **self.model_kwargs,
+            **merged,
             "model": self.model,
             "messages": [{"role": "system", "content": system_content}] + messages,
         }
