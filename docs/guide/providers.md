@@ -39,6 +39,57 @@ Agent(
 
 Planner settings go through `Swarm(planner_kwargs={...})`.
 
+## Retries and timeouts for LLM calls
+A single transient error consisting of `429` or `5xx` error from the provider can abort the whole run. As a result,
+Swarm Kit has default retry and timeout settings which are passed to LiteLLM in order to avoid abortion of the 
+whole run.
+
+### Agent calls
+`Agent` accepts `num_retries` and `timeout` directly:
+
+```python
+agent = Agent(
+    name="Support",
+    instructions="...",
+    num_retries=3,
+    timeout=60
+)
+```
+
+num_retries and timeout default to None if not specified by the user meaning LiteLLM's defaults apply
+
+### Overriding retry and timeout via `model_kwargs`
+
+In order to override num_retries and timeout, `model_kwargs` is utilised as shown below
+
+```python
+agent = Agent(
+    name="Support",
+    instructions="...",
+    num_retries=3,
+    model_kwargs={"temperature": 0, "num_retries": 6}
+)
+```
+
+In the case the same key appears in both places, the key in `model_kwargs` is given precedence
+
+### Planner calls (in supervised mode)
+Separately from the agent, the planner runs its own LLM call with separate defaults
+
+```python
+swarm = Swarm(
+    agents=[...],
+    planner_kwargs={"num_retries": 6, "timeout": 100}
+)
+```
+The values input into `planner_kwargs` override the defaults in every case. Furthermore, the planner is called once per run
+and its unsuccessfulness results in abortion of the whole system
+
+| Setting       | Default |
+|---------------|---------|
+| `num_retries` | `3`     |
+| `timeout`     | `60`    |
+
 !!! note "Tool calling support"
     Agents need a model that supports **function/tool calling**: transfers and state updates
     depend on it. Supervised mode also asks the planner for JSON output. For models without

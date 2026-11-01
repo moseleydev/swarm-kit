@@ -23,6 +23,10 @@ LoadHandler = Callable[[str], Any]
 EventHandler = Callable[[Dict[str, Any]], Any]
 ApprovalHandler = Callable[[ApprovalRequest], Any]
 
+DEFAULT_PLANNER_KWARGS: Dict[str, Any] = {
+    "num_retries": 3,
+    "timeout": 60,
+}
 
 def _reject_constant(name: str) -> None:
     """Reject non-standard JSON constants when decoding state values."""
@@ -123,6 +127,8 @@ class Swarm:
         event_handler: Optional callback receiving every event dict
             (``{"agent", "action", "content", "timestamp", ...}``).
         planner_kwargs: Extra LiteLLM kwargs for the planner call (e.g. ``api_key``).
+        planner_kwargs is merged over the default ``{"num_retries": 3, "timeout": 60}`` in order
+        to ensure user specified values are used
         run_sync_tools_in_thread: Opt in to running synchronous custom tools in a worker
             thread during async execution. ``async def`` tools are unaffected.
         approval_handler: ``(ApprovalRequest) -> True | False | str`` hook called
@@ -468,6 +474,7 @@ class Swarm:
     def _planner_kwargs(self, messages: History) -> Dict[str, Any]:
         return {
             "response_format": {"type": "json_object"},
+            **DEFAULT_PLANNER_KWARGS,
             **self.planner_kwargs,
             "model": self.planner_model,
             "messages": messages,
