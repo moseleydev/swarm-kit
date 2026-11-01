@@ -619,6 +619,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#retries-and-timeouts-for-llm-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retries and timeouts for LLM calls
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Retries and timeouts for LLM calls">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agent-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent calls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overriding-retry-and-timeout-via-model_kwargs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overriding retry and timeout via model_kwargs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planner-calls-in-supervised-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planner calls (in supervised mode)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -791,6 +841,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#retries-and-timeouts-for-llm-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retries and timeouts for LLM calls
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Retries and timeouts for LLM calls">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agent-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent calls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overriding-retry-and-timeout-via-model_kwargs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overriding retry and timeout via model_kwargs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planner-calls-in-supervised-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planner calls (in supervised mode)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -878,6 +978,57 @@ stronger one for the actual work:</p>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p">)</span>
 </code></pre></div>
 <p>Planner settings go through <code>Swarm(planner_kwargs={...})</code>.</p>
+<h2 id="retries-and-timeouts-for-llm-calls">Retries and timeouts for LLM calls<a class="headerlink" href="#retries-and-timeouts-for-llm-calls" title="Permanent link">&para;</a></h2>
+<p>A single transient error consisting of <code>429</code> or <code>5xx</code> error from the provider can abort the whole run. As a result,
+Swarm Kit has default retry and timeout settings which are passed to LiteLLM in order to avoid abortion of the 
+whole run.</p>
+<h3 id="agent-calls">Agent calls<a class="headerlink" href="#agent-calls" title="Permanent link">&para;</a></h3>
+<p><code>Agent</code> accepts <code>num_retries</code> and <code>timeout</code> directly:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Support&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">instructions</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">num_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">)</span>
+</code></pre></div>
+<p>num_retries and timeout default to None if not specified by the user meaning LiteLLM's defaults apply</p>
+<h3 id="overriding-retry-and-timeout-via-model_kwargs">Overriding retry and timeout via <code>model_kwargs</code><a class="headerlink" href="#overriding-retry-and-timeout-via-model_kwargs" title="Permanent link">&para;</a></h3>
+<p>In order to override num_retries and timeout, <code>model_kwargs</code> is utilised as shown below</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Support&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">instructions</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">num_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;num_retries&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">}</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">)</span>
+</code></pre></div>
+<p>In the case the same key appears in both places, the key in <code>model_kwargs</code> is given precedence</p>
+<h3 id="planner-calls-in-supervised-mode">Planner calls (in supervised mode)<a class="headerlink" href="#planner-calls-in-supervised-mode" title="Permanent link">&para;</a></h3>
+<p>Separately from the agent, the planner runs its own LLM call with separate defaults</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">swarm</span> <span class="o">=</span> <span class="n">Swarm</span><span class="p">(</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="n">agents</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">planner_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;num_retries&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="p">)</span>
+</code></pre></div>
+The values input into <code>planner_kwargs</code> override the defaults in every case. Furthermore, the planner is called once per run
+and its unsuccessfulness results in abortion of the whole system</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>num_retries</code></td>
+<td><code>3</code></td>
+</tr>
+<tr>
+<td><code>timeout</code></td>
+<td><code>60</code></td>
+</tr>
+</tbody>
+</table>
 <div class="admonition note">
 <p class="admonition-title">Tool calling support</p>
 <p>Agents need a model that supports <strong>function/tool calling</strong>: transfers and state updates
